@@ -5,8 +5,8 @@ import numpy as np
 
 class GameOfLife():
     def __init__(self, height=None, width=None, randomize=True, filepath=None):
-        self.listen = True
 
+        self.listen = True
         if not randomize:
             with open(filepath, 'r') as f:
                 data = json.load(f)
