@@ -1,16 +1,20 @@
+import os
 import random
 import time
 import json
 import numpy as np
 
 class GameOfLife():
-    def __init__(self, height=None, width=None, randomize=True, filepath=None):
-
+    def __init__(self, height=None, width=None, randomize=True):
         self.listen = True
+
+
         if not randomize:
-            with open(filepath, 'r') as f:
+            fp = os.path.dirname(os.path.abspath(__file__))
+            filename=os.getenv("FILENAME", None)
+            with open(os.path.join(fp, filename), 'r') as f:
                 data = json.load(f)
-                board_state = np.array(data.get("toad", None))
+                board_state = np.array(data.get("test1", None))
                 self.height, self.width = board_state.shape
 
         else:
@@ -95,7 +99,6 @@ class GameOfLife():
             if live_neighbors == 3:
                 self.new_board[row][col] = 1
 
-
     def render(self, board):
         visual_matrix = np.empty((self.height, self.width), dtype=str)
         for row in range(0, self.height):
@@ -104,11 +107,11 @@ class GameOfLife():
                     visual_matrix[row][col] = "@"
                 else:
                     visual_matrix[row][col] = "."
-        print("\033[1;32;")
+        # print("\033[1;32;")
         print("{}".format(visual_matrix))
-        time.sleep(1.5)
+        time.sleep(2)
 
 
 if __name__ == '__main__':
-    game = GameOfLife(randomize=False, filepath="patterns.json")
+    game = GameOfLife(randomize=False)
     game.run_game()
