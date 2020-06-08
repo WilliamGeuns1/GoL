@@ -8,7 +8,7 @@ environment
 
 #
 *.txt
-
+grids.json
 
 # C extensions
 *.so
