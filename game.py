@@ -45,6 +45,16 @@ class GameOfLife():
             self.render(self.current_board)
 
     def next_board_state(self, current_board):
+        """
+        This function calculates the next board state based on the current board state.
+
+        Parameters:
+            board     (np.array):   Current board state.
+
+        Returns:
+            new_board (np.array):   The new board state.
+        """
+
         for row in range(0, self.height):
             for col in range(0, self.width):
                 live_neighbors = 0
@@ -80,11 +90,24 @@ class GameOfLife():
 
     def gol_rules(self, live_neighbors, board, row, col):
         """
-           Any live cell with 0 or 1 live neighbors becomes dead, because of underpopulation
-           Any live cell with 2 or 3 live neighbors stays alive, because its neighborhood is just right
-           Any live cell with more than 3 live neighbors becomes dead, because of overpopulation
-           Any dead cell with exactly 3 live neighbors becomes alive, by reproduction
+        This function applies the GoL rules stated below.
+
+        Any live cell with 0 or 1 live neighbors becomes dead, because of underpopulation.
+        Any live cell with 2 or 3 live neighbors stays alive, because its neighborhood is just right.
+        Any live cell with more than 3 live neighbors becomes dead, because of overpopulation.
+        Any dead cell with exactly 3 live neighbors becomes alive, by reproduction.
+
+        Parameters:
+            live_neighbors (int):   Number of alive neighbors.
+            board     (np.array):   Current board state.
+            row            (int):   Current row value.
+            row            (int):   Current column value.
+
+        Returns:
+            temp_board (np.array): The updated board state.
+
         """
+
         current_cell_value = board[row][col]
         if current_cell_value > 0:
             if live_neighbors <= 1:
@@ -101,7 +124,6 @@ class GameOfLife():
 
         return self.temp_board
 
-
     def render(self, board):
         # TODO : Make UI to display the grid instead of ' ' and '@'
         visual_matrix = np.empty((self.height, self.width), dtype=str)
@@ -113,37 +135,36 @@ class GameOfLife():
                     visual_matrix[row][col] = " "
 
         # setup curses
-        stdscr = curses.initscr()
-        stdscr.clear()
-        stdscr.refresh()
+        screen = curses.initscr()
+        screen.clear()
+        screen.refresh()
 
         curses.start_color()
         curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_GREEN)
 
         title = 'GoL\n'
 
-        stdscr.attron(curses.color_pair(1))
-        stdscr.attron(curses.A_BOLD)
+        screen.attron(curses.color_pair(1))
+        screen.attron(curses.A_BOLD)
 
-        stdscr.addstr(title)
+        screen.addstr(title)
 
-        # Make string of lists
+        # Make string of lists (board)
         str_mat = '\n'.join(' '.join(sublist) for sublist in visual_matrix)
-        stdscr.addstr(str_mat)
+        screen.addstr(str_mat)
 
-        stdscr.attroff(curses.color_pair(1))
-        stdscr.attroff(curses.A_BOLD)
+        screen.attroff(curses.color_pair(1))
+        screen.attroff(curses.A_BOLD)
 
-        stdscr.refresh()
+        screen.refresh()
         time.sleep(0.25)
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-w', type=int, default=4, help="width of random grid layout")
     parser.add_argument('-he', type=int, default=4, help="height of random grid layout")
     parser.add_argument('-p', type=str, help="specify pattern to use from grid file, must be used with '-r' param")
-    parser.add_argument('-r', action='store_false', help="turn random initialization of the grid off, by default on")
+    parser.add_argument('-r', action='store_false', default=True, help="turn random initialization of the grid off, by default on")
     args = parser.parse_args()
 
     game = GameOfLife(height=args.he, width=args.w, randomize=args.r, pattern=args.p)
