@@ -157,7 +157,7 @@ class GameOfLife():
         screen.attroff(curses.A_BOLD)
 
         screen.refresh()
-        time.sleep(0.25)
+        time.sleep(0.40)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
