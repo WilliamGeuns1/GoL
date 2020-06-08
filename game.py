@@ -36,9 +36,10 @@ class GameOfLife():
 
         self.current_board = board_state
         self.temp_board = self.current_board.copy()
-        self.render(self.current_board)
+
 
     def run_game(self):
+        self.render(self.current_board)
         while self.listen:
             next_board_state = self.next_board_state(self.current_board)
             self.current_board = next_board_state.copy()
@@ -58,7 +59,6 @@ class GameOfLife():
         for row in range(0, self.height):
             for col in range(0, self.width):
                 live_neighbors = 0
-
                 # check if there is a row underneath the current
                 if -1 < row + 1 <= self.height - 1:
                     live_neighbors += current_board[row + 1][col]
