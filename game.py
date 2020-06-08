@@ -34,63 +34,49 @@ class GameOfLife():
                 for col in range(self.width):
                     board_state[row][col] = random.randint(0, 1)
 
-        self.temp_board = np.zeros((board_state.shape[0], board_state.shape[1]))
-        self.init_board = board_state
-        self.render(self.init_board, 0)
+        self.current_board = board_state
+        self.temp_board = self.current_board.copy()
+        self.render(self.current_board)
 
     def run_game(self):
-        i = 1
         while self.listen:
-            self.next_board_state(i)
-            self.render(self.new_board, i)
-            i += 1
+            next_board_state = self.next_board_state(self.current_board)
+            self.current_board = next_board_state.copy()
+            self.render(self.current_board)
 
-    def next_board_state(self, cycle):
-        if cycle == 1:
-            board_state = self.init_board
-            self.check_neighbors(board_state)
-        else:
-            board_state = self.new_board
-            self.check_neighbors(board_state)
-
-    def check_neighbors(self, board):
-        board_state_test = board
+    def next_board_state(self, current_board):
         for row in range(0, self.height):
             for col in range(0, self.width):
                 live_neighbors = 0
 
                 # check if there is a row underneath the current
                 if -1 < row + 1 <= self.height - 1:
-                    live_neighbors += board_state_test[row + 1][col]
+                    live_neighbors += current_board[row + 1][col]
                     # underneath and behind (if there is a col behind)
                     if -1 < col - 1 <= self.width - 1:
-                        live_neighbors += board_state_test[row + 1][col - 1]
+                        live_neighbors += current_board[row + 1][col - 1]
                     # underneath and ahead (if there is a col ahead)
                     if -1 < col + 1 <= self.width - 1:
-                        live_neighbors += board_state_test[row + 1][col + 1]
+                        live_neighbors += current_board[row + 1][col + 1]
 
                 # check if there is a row above the current
                 if -1 < row - 1 <= self.height - 1:
-                    live_neighbors += board_state_test[row - 1][col]
+                    live_neighbors += current_board[row - 1][col]
                     # above and behind
                     if -1 < col - 1 <= self.width - 1:
-                        live_neighbors += board_state_test[row - 1][col - 1]
+                        live_neighbors += current_board[row - 1][col - 1]
                     # above and ahead
                     if -1 < col + 1 <= self.width - 1:
-                        live_neighbors += board_state_test[row - 1][col + 1]
+                        live_neighbors += current_board[row - 1][col + 1]
 
                 # check for adjacent cells
                 if -1 < col - 1 <= self.width - 1:
-                    live_neighbors += board_state_test[row][col - 1]
+                    live_neighbors += current_board[row][col - 1]
                 if -1 < col + 1 <= self.width - 1:
-                    live_neighbors += board_state_test[row][col + 1]
+                    live_neighbors += current_board[row][col + 1]
 
-                self.gol_rules(
-                               live_neighbors,
-                               board_state_test,
-                               row,
-                               col
-                               )
+                new_board = self.gol_rules(live_neighbors, current_board, row, col)
+        return new_board
 
     def gol_rules(self, live_neighbors, board, row, col):
         """
@@ -113,12 +99,11 @@ class GameOfLife():
             else:
                 self.temp_board[row][col] = 0
 
-        # check if we went through the whole grid
-        if (row + 1 == board.shape[0]) and (col + 1 == board.shape[1]):
-            self.new_board = self.temp_board
+        return self.temp_board
 
-    def render(self, board, run):
-        # TODO : Make UI to display the grid instead of '.' and '@'
+
+    def render(self, board):
+        # TODO : Make UI to display the grid instead of ' ' and '@'
         visual_matrix = np.empty((self.height, self.width), dtype=str)
         for row in range(0, self.height):
             for col in range(0, self.width):
@@ -133,9 +118,9 @@ class GameOfLife():
         stdscr.refresh()
 
         curses.start_color()
-        curses.init_pair(1, curses.COLOR_MAGENTA, curses.COLOR_GREEN)
+        curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_GREEN)
 
-        title = 'Run #{}\n'.format(run)
+        title = 'GoL\n'
 
         stdscr.attron(curses.color_pair(1))
         stdscr.attron(curses.A_BOLD)
@@ -150,7 +135,7 @@ class GameOfLife():
         stdscr.attroff(curses.A_BOLD)
 
         stdscr.refresh()
-        time.sleep(0.8)
+        time.sleep(0.25)
 
 
 if __name__ == '__main__':
